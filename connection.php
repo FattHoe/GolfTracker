@@ -1,10 +1,10 @@
 <?php
   function openConn()
   {
-    $dbHost = "sql204.epizy.com";
-    $dbUser = "epiz_27287764";
-    $dbPass = "bvrUCF1l73lyWT";
-    $dbName = "epiz_27287764_Main";
+    $dbHost = "sql207.epizy.com";
+    $dbUser = "epiz_28798540";
+    $dbPass = "OtSen3SR5zC";
+    $dbName = "epiz_28798540_Main";
     $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
     if(!$conn)
     {
