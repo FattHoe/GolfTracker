@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <!-- Metadata Definitions -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Title and Logo for Browser Navigation Bar -->
+    <title>SportExcel Golf Tracker</title>
+    <link rel="icon" href="sportexcel-logo.jpg">
+
+    <!-- CSS Style Definitions -->
+    <style media="screen">
+      #navContainer, #viewTournamentsButton, #adminSignInButton
+      {
+        margin: 0;
+        position: absolute;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+
+      #navContainer
+      {
+        border: solid 1px;
+        border-radius: 5px;
+        height: 400px;
+        width: 300px;
+        top: 50%;
+      }
+
+      #viewTournamentsButton, #adminSignInButton
+      {
+        height: 30px;
+        width: 200px;
+      }
+
+      #viewTournamentsButton
+      {
+        top: 33%;
+      }
+
+      #adminSignInButton
+      {
+        top: 67%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- User Interface -->
+    <div id="navContainer">
+      <button id="viewTournamentsButton" onclick="window.location.href = 'tournaments.php'" disabled>View&nbsp;Tournaments</button>
+      <button id="adminSignInButton" onclick="window.location.href = 'admin-sign-in.php'">Sign&nbsp;In&nbsp;as&nbsp;Admin</button>
+    </div>
+  </body>
+</html>
