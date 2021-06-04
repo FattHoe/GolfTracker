@@ -37,14 +37,15 @@
     ?>
 
     <!-- User Interface -->
-    <h1 id="test"></h1>
+    <h1 id="tournamentId"></h1>
+    <div id="leaderboard"></div>
 
     <!-- PHP Outputs to JS Code -->
     <?php
       if ($tId)
       {
         echo "<script>
-                document.getElementById(\"test\").innerHTML = \"Tournament ID: ", $tId, "\";
+                document.getElementById(\"tournamentId\").innerHTML = \"Tournament ID: ", $tId, "\";
               </script>";
       }
     ?>
