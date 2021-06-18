@@ -209,7 +209,7 @@
   define
   (
     "GET_LATEST_TOURNAMENTS",
-    "SELECT tournamentID, tournamentName, startDay, startMonth, startYear, endDay, endMonth, endYear, actualNumPlayers, registerOpenDay, registerOpenMonth, registerOpenYear, registerCloseDay, registerCloseMonth, registerCloseYear, paymentCloseDay, paymentCloseMonth, paymentCloseYear
+    "SELECT tournamentID, tournamentName, startDay, startMonth, startYear, endDay, endMonth, endYear, venue, actualNumPlayers, registerOpenDay, registerOpenMonth, registerOpenYear, registerCloseDay, registerCloseMonth, registerCloseYear, paymentCloseDay, paymentCloseMonth, paymentCloseYear
      FROM TOURNAMENTS
      ORDER BY startYear DESC, startMonth DESC, startDay DESC, endYear DESC, endMonth DESC, endDay DESC, tournamentName ASC
      LIMIT %u"
@@ -218,12 +218,38 @@
   define
   (
     "GET_TOURNAMENTS_BY_NAME_SEARCH",
-    "SELECT tournamentID, tournamentName, startDay, startMonth, startYear, endDay, endMonth, endYear, actualNumPlayers, registerOpenDay, registerOpenMonth, registerOpenYear, registerCloseDay, registerCloseMonth, registerCloseYear, paymentCloseDay, paymentCloseMonth, paymentCloseYear
+    "SELECT tournamentID, tournamentName, startDay, startMonth, startYear, endDay, endMonth, endYear, venue, actualNumPlayers, registerOpenDay, registerOpenMonth, registerOpenYear, registerCloseDay, registerCloseMonth, registerCloseYear, paymentCloseDay, paymentCloseMonth, paymentCloseYear
      FROM TOURNAMENTS
      WHERE LOWER(tournamentName) LIKE \"%%%s%%\"
      ORDER BY startYear DESC, startMonth DESC, startDay DESC, endYear DESC, endMonth DESC, endDay DESC, tournamentName ASC
      LIMIT %u"
   );
+
+  define
+  (
+    "GET_TOURNAMENT_BY_ID",
+    "SELECT tournamentName, startDay, startMonth, startYear, endDay, endMonth, endYear, venue
+     FROM TOURNAMENTS
+     WHERE tournamentID = %u"
+  );
+
+  define
+  (
+    "GET_PLAYER_SCORES_BY_TOURNAMENT_ID_AND_ROUND_NUMBER",
+    "SELECT SCORES.playerID AS playerID, PLAYERS.firstName AS firstName, PLAYERS.lastName AS lastName,
+            SCORES.categoryID AS categoryID, CATEGORIES.ageGroupCode AS ageGroupCode, SCORES.handicap AS handicap,
+            SCORES.holesPlayed AS holesPlayed, SCORES.noScoreCode AS noScoreCode, SCORES.gross18 AS gross18
+     FROM SCORES
+      INNER JOIN PLAYERS ON SCORES.playerID = PLAYERS.playerID
+      INNER JOIN CATEGORIES ON SCORES.categoryID = CATEGORIES.categoryID
+     WHERE SCORES.tournamentID = %u AND SCORES.roundNumber = %u"
+  );
+
+  // define
+  // (
+  //   "GET_CATEGORIES_BY_TOURNMENT_ID",
+  //   "SELECT "
+  // );
 
   define
   (

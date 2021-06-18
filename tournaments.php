@@ -149,10 +149,11 @@
     <?php
       include "connection.php";
       include "mysqlQueries.php";
+      include "validateInput.php";
 
       $conn = openConn();
 
-      if ($_POST["nameSearch"])
+      if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["nameSearch"])
       {
         $nameSearch = validateInput($_POST["nameSearch"]);
         $tournaments = $conn->query(sprintf(GET_TOURNAMENTS_BY_NAME_SEARCH, strtolower($nameSearch), MAX_TOURNAMENTS));
