@@ -231,11 +231,15 @@
         newCourse = "<div id=\"course" + numCourses + "Container\" class=\"courseContainer\">\
                       <button class=\"deleteCourse\" onclick=\"return deleteCourse(" + numCourses + ")\">Delete Course</button>\
                       Course:<br>\
-                      <input id=\"course" + numCourses + "\" class=\"courseSearch\" list=\"courses\" placeholder=\"Course\" value=\"\" oninput=\"displayTeeBoxes(" + numCourses + ")\">\
+                      <input id=\"course" + numCourses + "\" class=\"courseSearch\" list=\"courses\" placeholder=\"Search Course\" value=\"\" oninput=\"displayTeeBoxes(" + numCourses + ")\">\
                       <input type=\"text\" id=\"courseId" + numCourses + "\" name=\"courseId" + numCourses + "\" value=\"\" hidden>\
                       <div id=\"course" + numCourses + "TeeBoxes\" class=\"courseTeeBoxes\"></div>\
                       Categories:&nbsp;<span id=\"course" + numCourses + "Categories\"></span><br>\
                       <input id=\"category" + numCourses + "\" class=\"categorySearch\" list=\"categories\" placeholder=\"Select Category\" oninput=\"addCategory(" + numCourses + ")\">\
+					  <div class=\"roundContainer\">\
+						Number of Rounds:<br>\
+						<input type=\"number\" id=\"course" + numCourses + "NumRounds\" name=\"numRounds" + numCourses + "\" min=\"1\" placeholder=\"Enter Rounds\" value=\"\">\
+					  </div>\
                     </div>";
         
         catCourseHtml = catCourseHtml.substring(0, index) + newCourse + catCourseHtml.substring(index);
@@ -276,13 +280,81 @@
 
             index = catCourseHtml.indexOf("name=\"yardageId" + i + "\"", index);
           }
+
+		  index = catCourseHtml.indexOf("id=\"course" + i + "NumRounds\"");
+          index = catCourseHtml.indexOf("value=", index) + 7;
+          catCourseHtml = catCourseHtml.substring(0, index) + document.getElementById("course" + i + "NumRounds").value + catCourseHtml.substring(catCourseHtml.indexOf("\"", index));
         }
 
         document.getElementById("catCourseContainer").innerHTML = catCourseHtml;
+
+		return false;
       }
 
       function deleteCourse(courseNum)
       {
+	    var catCourseHtml = document.getElementById("catCourseContainer").innerHTML;
+		var startIndex = catCourseHtml.indexOf("<div id=\"course" + courseNum + "Container");
+		var endIndex;
+		if (courseNum < numCourses)
+		{
+		  endIndex = catCourseHtml.indexOf("<div id=\"course" + (courseNum + 1) + "Container");
+		}
+		else
+		{
+		  endIndex = catCourseHtml.indexOf("<button id=\"addCourseButton\"");
+		}
+
+		catCourseHtml = catCourseHtml.substring(0, startIndex) + catCourseHtml.substring(endIndex);
+
+		for (var i = 1; i != courseNum && i <= numCourses; i++)
+        {
+          index = catCourseHtml.indexOf("id=\"course" + i + "\"");
+          index = catCourseHtml.indexOf("value=", index) + 7;
+          catCourseHtml = catCourseHtml.substring(0, index) + document.getElementById("course" + i).value + catCourseHtml.substring(catCourseHtml.indexOf("\"", index));
+
+          index = catCourseHtml.indexOf("id=\"courseId" + i + "\"");
+          index = catCourseHtml.indexOf("value=", index) + 7;
+          catCourseHtml = catCourseHtml.substring(0, index) + document.getElementById("courseId" + i).value + catCourseHtml.substring(catCourseHtml.indexOf("\"", index));
+
+          index = catCourseHtml.indexOf("name=\"yardageId" + i + "\"");
+          while (index > 0)
+          {
+            index = catCourseHtml.indexOf(">", index);
+            check = catCourseHtml.substring(index - 10, index);
+
+            tempIndex = catCourseHtml.indexOf("for=\"", index) + 5;
+            id = catCourseHtml.substring(tempIndex, catCourseHtml.indexOf("\"", tempIndex));
+            
+            if (document.getElementById(id).checked)
+            {
+              if (check != "checked=\"\"")
+              {
+                catCourseHtml = catCourseHtml.substring(0, index) + "checked=\"\"" + catCourseHtml.substring(index);
+              }
+            }
+            else
+            {
+              if (check == "checked=\"\"")
+              {
+                catCourseHtml = catCourseHtml.substring(0, index - 10) + catCourseHtml.substring(index);
+              }
+            }
+
+			numCourses--;
+            index = catCourseHtml.indexOf("name=\"yardageId" + i + "\"", index);
+          }
+
+		  index = catCourseHtml.indexOf("id=\"course" + i + "NumRounds\"");
+          index = catCourseHtml.indexOf("value=", index) + 7;
+          catCourseHtml = catCourseHtml.substring(0, index) + document.getElementById("course" + i + "NumRounds").value + catCourseHtml.substring(catCourseHtml.indexOf("\"", index));
+        }
+
+		// Update numbers after deletion
+		// Add categories used in deleted course back to datalist
+
+        document.getElementById("catCourseContainer").innerHTML = catCourseHtml;
+
         return false;
       }
     </script>
@@ -572,7 +644,14 @@
         while ($club = $clubs->fetch_assoc())
         {
           array_push($courseIds, $club["courseID"]);
-          array_push($courses, $club["clubName"] . " (" . $club["courseName"] . ")");
+		  if ($club["courseName"] != null)
+		  {
+			array_push($courses, $club["clubName"] . " (" . $club["courseName"] . ")");
+		  }
+          else
+		  {
+			array_push($courses, $club["clubName"]);
+		  }
 
           $teeBoxes = $conn->query(sprintf(GET_ALL_TEEBOXES, $club["courseID"]));
           $teeBoxColours = array();
@@ -659,7 +738,7 @@
           Categories&nbsp;&&nbsp;Courses:<br>
           <div id="course1Container" class="courseContainer">
             Course:<br>
-            <input id="course1" class="courseSearch" list="courses" placeholder="Course" value="" oninput="displayTeeBoxes(1)">
+            <input id="course1" class="courseSearch" list="courses" placeholder="Search Course" value="" oninput="displayTeeBoxes(1)">
             <datalist id="courses">
               <?php
                 foreach ($courses as $course)
@@ -680,18 +759,9 @@
                 }
               ?>
             </datalist>
-            <div class="roundContainer"><!-- here -->
-              Rounds:<br>
-              <input type="checkbox" id="course1AllRounds">
-              <label for="course1AllRounds">All&nbsp;Rounds</label><br>
-              <input type="checkbox" id="course1Round1" name="course1Round1">
-              <label for="course1Round1">Round&nbsp;1</label>
-              <input type="checkbox" id="course1Round3" name="course1Round3">
-              <label for="course1Round3">Round&nbsp;3</label><br>
-              <input type="checkbox" id="course1Round2" name="course1Round2">
-              <label for="course1Round2">Round&nbsp;2</label>
-              <input type="checkbox" id="course1Round4" name="course1Round4">
-              <label for="course1Round4">Round&nbsp;4</label><br>
+            <div class="roundContainer">
+              Number of Rounds:<br>
+              <input type="number" id="course1NumRounds" name="numRounds1" min="1" placeholder="Enter Rounds" value="">
             </div>
           </div>
           <button id="addCourseButton" onclick="return addCourse();">Add Course</button>

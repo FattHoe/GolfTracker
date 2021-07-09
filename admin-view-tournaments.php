@@ -25,17 +25,17 @@
             tableHtml += "<tr><td>";
             tableHtml += "<span style=\"font-size: 20px;\"><b>" + tourney["tournamentName"] + "</b></span><br>";
             tableHtml += "<span><b>Date:</b>&nbsp;" + tourney["startDay"] + "/" + tourney["startMonth"] + "/" + tourney["startYear"];
-            tableHtml += "&nbsp;-nbsp;" + tourney["endDay"] + "/" + tourney["endMonth"] + "/" + tourney["endYear"] + "</span>";
+            tableHtml += "&nbsp;-&nbsp;" + tourney["endDay"] + "/" + tourney["endMonth"] + "/" + tourney["endYear"] + "</span>";
             tableHtml += "<span class=\"numPlayersAtt\"><b>Player&nbsp;Count:</b>&nbsp;" + tourney["actualNumPlayers"] + "</span>";
 
             tableHtml += "<span class=\"registerDateAtt\"><b>Registration:</b>&nbsp;";
             if (date.getFullYear() < tourney["registerOpenYear"] || (date.getFullYear() == tourney["registerOpenYear"] && ((date.getMonth() + 1) < tourney["registerOpenMonth"] || ((date.getMonth() + 1) == tourney["registerOpenMonth"] && date.getDate() < tourney["registerOpenDay"]))))
             {
-              tableHtml += "Opens&nbps;on&nbsp;" + tourney["registerOpenDay"] + "/" + tourney["registerOpenMonth"] + "/" + tourney["registerOpenYear"];
+              tableHtml += "Opens&nbsp;on&nbsp;" + tourney["registerOpenDay"] + "/" + tourney["registerOpenMonth"] + "/" + tourney["registerOpenYear"];
             }
             else if (date.getFullYear() < tourney["registerCloseYear"] || (date.getFullYear() == tourney["registerCloseYear"] && ((date.getMonth() + 1) < tourney["registerCloseMonth"] || ((date.getMonth() + 1) == tourney["registerCloseMonth"] && date.getDate() < tourney["registerCloseDay"]))))
             {
-              tableHtml += "Closes&nbps;on&nbsp;" + tourney["registerCloseDay"] + "/" + tourney["registerCloseMonth"] + "/" + tourney["registerCloseYear"];
+              tableHtml += "Closes&nbsp;on&nbsp;" + tourney["registerCloseDay"] + "/" + tourney["registerCloseMonth"] + "/" + tourney["registerCloseYear"];
             }
             else if (date.getFullYear() == tourney["registerCloseYear"] && (date.getMonth() + 1) == tourney["registerCloseMonth"] && date.getDate() == tourney["registerCloseDay"])
             {
@@ -50,7 +50,7 @@
             tableHtml += "<span class=\"paymentDateAtt\"><b>Payment:</b>&nbsp;";
             if (date.getFullYear() < tourney["paymentCloseYear"] || (date.getFullYear() == tourney["paymentCloseYear"] && ((date.getMonth() + 1) < tourney["paymentCloseMonth"] || ((date.getMonth() + 1) == tourney["paymentCloseMonth"] && date.getDate() < tourney["paymentCloseDay"]))))
             {
-              tableHtml += "Closes&nbps;on&nbsp;" + tourney["paymentCloseDay"] + "/" + tourney["paymentCloseMonth"] + "/" + tourney["paymentCloseYear"];
+              tableHtml += "Closes&nbsp;on&nbsp;" + tourney["paymentCloseDay"] + "/" + tourney["paymentCloseMonth"] + "/" + tourney["paymentCloseYear"];
             }
             else if (date.getFullYear() == tourney["paymentCloseYear"] && (date.getMonth() + 1) == tourney["paymentCloseMonth"] && date.getDate() == tourney["paymentCloseDay"])
             {
@@ -147,17 +147,17 @@
 
       .numPlayersAtt
       {
-        left: 200px;
+        left: 220px;
       }
 
       .registerDateAtt
       {
-        left: 400px;
+        left: 340px;
       }
 
       .paymentDateAtt
       {
-        left: 600px;
+        left: 570px;
       }
 
       .scoringButtons, .viewButtons, .deleteButtons
