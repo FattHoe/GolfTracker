@@ -245,11 +245,14 @@
      WHERE SCORES.tournamentID = %u AND SCORES.roundNumber = %u"
   );
 
-  // define
-  // (
-  //   "GET_CATEGORIES_BY_TOURNMENT_ID",
-  //   "SELECT "
-  // );
+  define
+  (
+    "GET_NUM_ROUNDS_AND_TOTAL_PAR_BY_TOURNAMENT_ID_AND_CATEGORY_ID",
+    "SELECT SCORECARDS.numRounds AS numRounds, COURSES.totalPar AS totalPar
+     FROM SCORECARDS
+      INNER JOIN COURSES ON SCORECARDS.courseID = COURSES.courseID
+     WHERE tournamentID = %u AND categoryID = %u"
+  );
 
   define
   (

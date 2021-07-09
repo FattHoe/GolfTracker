@@ -22,10 +22,114 @@
 
         return;
       }
+
+      function displayLeaderboard(players, categories)
+      {
+        var leaderboardHtml = "";
+        var categoryKeys = Object.keys(categories);
+
+        for (var i = 0; i < categoryKeys.length; i++)
+        {
+          leaderboardHtml += "<h2>" + categories[categoryKeys[i]]["ageGroup"] + "</h2>";
+          leaderboardHtml += "<table><tr><th>#</th><th>Player</th>";
+          
+          var numRounds = categories[categoryKeys[i]]["numRounds"];
+          for (var j = 1; j <= numRounds; j++)
+          {
+            leaderboardHtml += "<th>R" + j + "</th>";
+          }
+          leaderboardHtml += "<th>Total</th></tr>";
+
+          var totalPar = categories[categoryKeys[i]]["totalPar"];
+          var sortedPlayers = sortPlayersOnScore(players, categoryKeys[i], totalPar);
+
+          for (var k = 0; k < sortedPlayers.length; k++)
+          {
+            leaderboardHtml += "<tr><td>" + (k + 1) + "</td><td>" + sortedPlayers[k]["lastName"] + ", " + sortedPlayers[k]["firstName"] + "</td>";
+            
+            var roundScores = sortedPlayers[k]["roundScores"];
+            var totalScore = 0;
+            var totalScoreToPar = 0;
+            for (var m = 0; m < numRounds; m++)
+            {
+              if (m < roundScores.length)
+              {
+                leaderboardHtml += "<td>" + roundScores[m] + "(" + (roundScores[m] - totalPar) + ")</td>";
+                totalScore += roundScores[m];
+                totalScoreToPar += roundScores[m] - totalPar;
+              }
+              else
+              {
+                leaderboardHtml += "<td></td>";
+              }
+            }
+
+            leaderboardHtml += "<td>" + totalScore + "(" + totalScoreToPar + ")</td></tr>";
+          }
+
+          leaderboardHtml += "</table><br>";
+        }
+
+        document.getElementById("leaderboard").innerHTML = leaderboardHtml;
+      }
+
+      function sortPlayersOnScore(players, categoryId, totalPar)
+      {
+        var extractedPlayers = [];
+
+        for (var i = 0; i < players.length; i++)
+        {
+          if (players[i]["categoryID"] == categoryId)
+          {
+            var totalScoreToPar = 0;
+
+            for (var j = 0; j < players[i]["roundScores"].length; j++)
+            {
+              totalScoreToPar += players[i]["roundScores"][j] - totalPar;
+            }
+            players[i]["totalScoreToPar"] = totalScoreToPar;
+            extractedPlayers.push(players[i]);
+          }
+        }
+
+        var sortedPlayers = extractedPlayers.sort((lhs, rhs) =>
+        {
+          if (lhs["totalScoreToPar"] < rhs["totalScoreToPar"])
+          {
+            return -1;
+          }
+          if (lhs["totalScoreToPar"] > rhs["totalScoreToPar"])
+          {
+            return 1;
+          }
+          if (lhs["holesPlayed"] < rhs["holesPlayed"])
+          {
+            return -1;
+          }
+          if (lhs["holesPlayed"] > rhs["holesPlayed"])
+          {
+            return 1;
+          }
+          return 0;
+        });
+
+        return sortedPlayers;
+      }
     </script>
 
     <!-- CSS Style Definitions -->
     <style media="screen">
+      table
+      {
+        border-collapse: collapse;
+      }
+
+      th, td
+      {
+        border: solid black 1px;
+        padding: 5px;
+        text-align: center;
+      }
     </style>
   </head>
 
@@ -73,7 +177,8 @@
 
                   if (!array_key_exists($score["categoryID"], $categories))
                   {
-                    $categories[$score["categoryID"]] = $score["ageGroupCode"];
+                    $categories[$score["categoryID"]] = [];
+                    $categories[$score["categoryID"]]["ageGroup"] = $score["ageGroupCode"];
                   }
                   
                   $players[$score["playerID"]]["handicap"] = $score["handicap"];
@@ -90,6 +195,22 @@
             }
 
             $roundNumber++;
+          }
+
+          foreach (array_keys($categories) as $categoryId)
+          {
+            $scorecardQuery = $conn->query(sprintf(GET_NUM_ROUNDS_AND_TOTAL_PAR_BY_TOURNAMENT_ID_AND_CATEGORY_ID, $tournamentId, (int)$categoryId));
+            if ($scorecardQuery->num_rows == 1)
+            {
+              $scorecard = $scorecardQuery->fetch_assoc();
+              $categories[$categoryId]["numRounds"] = $scorecard["numRounds"];
+              $categories[$categoryId]["totalPar"] = $scorecard["totalPar"];
+            }
+            else
+            {
+              $categories[$categoryId]["numRounds"] = "0";
+              $categories[$categoryId]["totalPar"] = "0";
+            }
           }
         }
       }
@@ -158,13 +279,12 @@
         }
 
         echo "var categories = {};";
-        foreach (array_keys($categories) as $categotyId)
+        foreach (array_keys($categories) as $categoryId)
         {
-          echo "categories[", $categotyId, "] = \"", $categories[$categotyId], "\";";
+          echo "categories[", $categoryId, "] = {\"ageGroup\": \"", $categories[$categoryId]["ageGroup"], "\", \"numRounds\": ", $categories[$categoryId]["numRounds"],", \"totalPar\": ", $categories[$categoryId]["totalPar"],"};";
         }
 
-        echo "console.log(players);
-              console.log(categories);</script>"; // do something with these JS objects. num rounds as field?
+        echo "displayLeaderboard(players, categories);</script>";
       }
       else
       {
